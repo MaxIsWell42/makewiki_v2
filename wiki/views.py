@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 
 from wiki.models import Page
 
@@ -26,3 +28,10 @@ class PageDetailView(DetailView):
         return render(request, 'page.html', {
           'page': page
         })
+    
+    def post(self, request, slug):
+        """ Creates a new wiki page """
+        form = PageForm(request.POST)
+        if form.is_valid():
+            page = form.save()
+            return HttpResponseRedirect(reverse_lazy('pages:detail', args=[page.id]))
